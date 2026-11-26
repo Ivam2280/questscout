@@ -20,7 +20,7 @@ test("public pages load and deep links work", async ({ page, request }) => {
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
-  await expect(page.locator("header")).toBeVisible();
+  await expect(page.locator("header.site-header")).toBeVisible();
   await page.goto("/escaperooms");
   await expect(page.getByText("The Forgotten Asylum", { exact: true }).first()).toBeVisible();
   await page.reload();

@@ -57,8 +57,8 @@ async function createApp() {
     timezone: env.timezone,
   }));
   app.use(express.json({ limit: "3mb" }));
-  const authLimiter = rateLimit({ windowMs: 60000, limit: 20, standardHeaders: "draft-8", legacyHeaders: false, message: { errors: [{ message: "Too many attempts. Please wait a minute." }] } });
-  const apiLimiter = rateLimit({ windowMs: 60000, limit: 180, standardHeaders: "draft-8", legacyHeaders: false });
+  const authLimiter = rateLimit({ windowMs: 60000, limit: env.authRateLimit, standardHeaders: "draft-8", legacyHeaders: false, message: { errors: [{ message: "Too many attempts. Please wait a minute." }] } });
+  const apiLimiter = rateLimit({ windowMs: 60000, limit: env.apiRateLimit, standardHeaders: "draft-8", legacyHeaders: false });
   const sensitiveFields = /\b(login|createUser|sendAuthCode|verifyAuthCode|loginWithCode|forgotPassword|verifyResetCode|resetPassword|requestEmailUpdate|confirmEmailUpdate|updatePassword|addPassword)\b/;
   app.post("/auth/google", authLimiter, async (req, res) => {
     if (!publicFirebaseConfig()) return res.status(503).json({ error: "Google sign-in is not configured. Use email and password." });

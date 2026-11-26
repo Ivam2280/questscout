@@ -234,6 +234,8 @@ credentials.
 | `DIRECT_DATABASE_URL` | No | Optional direct URL for migrations and seeding |
 | `JWT_SECRET` | Yes | Secret used to sign application sessions; minimum 32 characters |
 | `PORT` | No | API port, defaults to `3001` |
+| `AUTH_RATE_LIMIT` | No | Sensitive authentication requests per IP and minute; defaults to `20` |
+| `API_RATE_LIMIT` | No | GraphQL requests per IP and minute; defaults to `180` |
 | `APP_TIMEZONE` | No | Booking timezone, defaults to `Europe/Kyiv` |
 | `SEED_DEMO` | No | Adds missing demonstration rooms and activity |
 | `DEMO_PAYMENTS` | No | Enables checkout without external PayPal credentials |

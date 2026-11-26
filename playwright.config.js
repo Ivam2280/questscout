@@ -23,6 +23,7 @@ module.exports = defineConfig({
     reuseExistingServer: false,
     env: {
       NODE_ENV: "production", PORT: "4173",
+      AUTH_RATE_LIMIT: "200", API_RATE_LIMIT: "1000",
       DATABASE_URL: process.env.TEST_DATABASE_URL,
       DIRECT_DATABASE_URL: process.env.TEST_DATABASE_URL,
       JWT_SECRET: "browser-test-only-secret-at-least-32-characters",

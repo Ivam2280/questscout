@@ -15,6 +15,8 @@ const env = {
   directDatabaseUrl: process.env.DIRECT_DATABASE_URL || process.env.DATABASE_URL,
   jwtSecret: process.env.JWT_SECRET,
   port: positiveInteger(process.env.PORT, 3001, "PORT"),
+  authRateLimit: positiveInteger(process.env.AUTH_RATE_LIMIT, 20, "AUTH_RATE_LIMIT"),
+  apiRateLimit: positiveInteger(process.env.API_RATE_LIMIT, 180, "API_RATE_LIMIT"),
   timezone: process.env.APP_TIMEZONE || "Europe/Kyiv",
   seedDemo: process.env.SEED_DEMO === "true",
   demoPayments: process.env.DEMO_PAYMENTS !== "false",
