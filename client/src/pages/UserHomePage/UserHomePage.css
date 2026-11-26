@@ -210,12 +210,12 @@
 
 .home-section {
   position: relative;
-  padding: 68px clamp(24px, 6vw, 80px);
+  padding: 56px clamp(24px, 6vw, 80px);
   border-bottom: 1px solid var(--fog);
 }
 
 .home-section-inner { width: min(100%, 1200px); margin: 0 auto; }
-.home-section-header { margin-bottom: 40px; }
+.home-section-header { margin-bottom: 32px; }
 
 .home-section-eyebrow {
   display: flex;
@@ -472,8 +472,8 @@
 @keyframes home-loader-spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 1000px) {
-  .home-section { padding-block: 44px; }
-  .home-section-header { margin-bottom: 32px; }
+  .home-section { padding-block: 28px; }
+  .home-section-header { margin-bottom: 24px; }
   .home-room-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .home-room-link:last-child { grid-column: span 2; }
   .home-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -492,10 +492,10 @@
 }
 
 @media (max-width: 680px) {
-  .home-section { padding-block: 30px; }
-  .home-section-header { margin-bottom: 24px; }
-  .home-section-eyebrow { margin-bottom: 16px; }
-  .home-section-heading-row { align-items: flex-start; flex-direction: column; gap: 16px; }
+  .home-section { padding-block: 18px; }
+  .home-section-header { margin-bottom: 18px; }
+  .home-section-eyebrow { margin-bottom: 12px; }
+  .home-section-heading-row { align-items: flex-start; flex-direction: column; gap: 12px; }
   .home-room-grid,
   .home-steps,
   .home-contact-grid { grid-template-columns: 1fr; }
