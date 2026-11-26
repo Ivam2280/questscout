@@ -85,7 +85,7 @@ export default function Header() {
     <>
       <header className={`site-header${scrolled ? " site-header-scrolled" : ""}`}>
         <div className="header-desktop-only">
-          <QuestScoutLogo size={46} />
+          <QuestScoutLogo size={46} paddingLeft={0} />
         </div>
         <div className="header-mobile-only">
           <QuestScoutLogo size={38} paddingLeft={0} />
