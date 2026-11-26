@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  background: #0f0f0f;
+}
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+  background: #0f0f0f;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background: #0f0f0f;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+.app-page-loader {
+  display: grid;
+  min-height: 50vh;
+  place-items: center;
+  padding: 48px 24px;
+  color: #f0f0f5;
+  background: #0f0f0f;
+  text-align: center;
+}
+
+.runtime-config-screen {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+  color: #f0f0f5;
+  background: #0f0f0f;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.runtime-config-screen h1 {
+  margin: 0 0 16px;
+  font-size: 28px;
+}
+
+.runtime-config-screen p {
+  margin: 0;
+}
+
+.runtime-config-screen button {
+  margin-top: 24px;
+  padding: 12px 24px;
+  cursor: pointer;
+}
