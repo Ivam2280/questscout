@@ -22,6 +22,8 @@ const env = {
   demoPayments: process.env.DEMO_PAYMENTS !== "false",
   adminEmail: process.env.ADMIN_EMAIL?.trim().toLowerCase(),
   adminPassword: process.env.ADMIN_PASSWORD,
+  demoUserEmail: process.env.DEMO_USER_EMAIL?.trim().toLowerCase(),
+  demoUserPassword: process.env.DEMO_USER_PASSWORD,
   firebaseApiKey: process.env.FIREBASE_API_KEY || "",
   firebaseAuthDomain: process.env.FIREBASE_AUTH_DOMAIN || "",
   firebaseProjectId: process.env.FIREBASE_PROJECT_ID || "",
@@ -49,14 +51,23 @@ function validateAdminEnv() {
   if (Boolean(env.adminEmail) !== Boolean(env.adminPassword)) throw new Error("Set both ADMIN_EMAIL and ADMIN_PASSWORD, or leave both empty.");
 }
 
+function validateDemoUserEnv() {
+  if (Boolean(env.demoUserEmail) !== Boolean(env.demoUserPassword)) throw new Error("Set both DEMO_USER_EMAIL and DEMO_USER_PASSWORD, or leave both empty.");
+  if (!env.demoUserEmail) return;
+  if (env.demoUserEmail === env.adminEmail) throw new Error("DEMO_USER_EMAIL must be different from ADMIN_EMAIL.");
+  if (env.demoUserPassword.length < 8) throw new Error("DEMO_USER_PASSWORD must contain at least 8 characters.");
+  if (Buffer.byteLength(env.demoUserPassword, "utf8") > 72) throw new Error("DEMO_USER_PASSWORD must be at most 72 bytes.");
+}
+
 function validateServerEnv() {
   if (!env.databaseUrl) throw new Error("Set DATABASE_URL in the root .env or Render environment.");
   if (!env.jwtSecret || env.jwtSecret.length < 32) throw new Error("JWT_SECRET must contain at least 32 characters.");
   try { new Intl.DateTimeFormat("en", { timeZone: env.timezone }).format(); }
   catch { throw new Error("APP_TIMEZONE must be a valid IANA time zone."); }
   validateAdminEnv();
+  validateDemoUserEnv();
   if (!["auto", "smtp", "emailjs", "resend"].includes(env.mailProvider)) throw new Error("MAIL_PROVIDER must be auto, smtp, emailjs or resend.");
   if (!env.demoPayments && (!env.paypalClientId || !env.paypalClientSecret)) throw new Error("PayPal sandbox credentials are required when DEMO_PAYMENTS=false.");
 }
 
-module.exports = { env, validateServerEnv, validateAdminEnv };
+module.exports = { env, validateServerEnv, validateAdminEnv, validateDemoUserEnv };

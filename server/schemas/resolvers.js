@@ -1,7 +1,7 @@
 const { Op } = require("sequelize");
 const sequelize = require("../config/connection");
 const { User, EscapeRoom, Booking, Review } = require("../models");
-const { authMutations, normalizeEmail } = require("../services/auth");
+const { authMutations, normalizeEmail, isDemoUser } = require("../services/auth");
 const { paymentMutations } = require("../services/payments");
 const { availableSlots, createBooking, requireUser, ownedBooking } = require("../services/bookings");
 const { validateRoom } = require("../services/rooms");
@@ -121,6 +121,7 @@ const resolvers = {
       const user = await User.findByPk(id);
       if (!user) throw new UserInputError("User not found.");
       if (user.isAdmin) throw new ForbiddenError("Administrator accounts cannot be deleted here.");
+      if (isDemoUser(user)) throw new ForbiddenError("The shared demo account cannot be deleted.");
       await user.destroy();
       return true;
     },
@@ -130,6 +131,7 @@ const resolvers = {
       const user = await User.findByPk(id);
       if (!user) throw new UserInputError("User not found.");
       if (user.isAdmin) throw new ForbiddenError("Administrator accounts cannot be blocked here.");
+      if (isDemoUser(user)) throw new ForbiddenError("The shared demo account cannot be blocked.");
       return user.update({ isBlocked: !user.isBlocked });
     },
   },

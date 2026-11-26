@@ -46,6 +46,8 @@ Fill in the requested environment values:
 | `DATABASE_URL` | Your pooled Neon connection string |
 | `ADMIN_EMAIL` | An email you will use to sign in as administrator |
 | `ADMIN_PASSWORD` | A unique password of at least 8 characters |
+| `DEMO_USER_EMAIL` | A non-personal email used for the shared visitor demo |
+| `DEMO_USER_PASSWORD` | A dedicated 8+ character password you can publish with the demo |
 
 The blueprint generates `JWT_SECRET` and selects **Free**. It does not create a
 Render PostgreSQL database, disk, paid cron job or background worker.
@@ -77,6 +79,11 @@ DEMO_PAYMENTS=true
 Render supplies `PORT`. Do not configure frontend API URLs: all requests use the
 same origin. No `VITE_` variables are needed.
 
+When adding the shared visitor to an existing Blueprint, open the web service's
+**Environment** page and add `DEMO_USER_EMAIL` and `DEMO_USER_PASSWORD`
+manually. Blueprint values declared with `sync: false` are requested only when a
+new Blueprint instance is created.
+
 To enable Google, copy the `FIREBASE_*` web configuration from your local `.env`
 into Render's Environment tab, enable the Google provider in Firebase
 Authentication and add your Render hostname to its authorized domains.
@@ -88,12 +95,19 @@ For email, use an HTTPS provider on Render Free. See
 
 1. Pending SQL migrations create the schema in Neon.
 2. An administrator is created from your configured credentials.
-3. `SEED_DEMO=true` adds four rooms, sample reviews and completed sample bookings.
-4. The HTTP server starts and `/health` becomes available.
+3. A protected visitor account is created from the optional demo credentials.
+4. `SEED_DEMO=true` adds four rooms, sample reviews and completed sample bookings.
+5. The HTTP server starts and `/health` becomes available.
 
 Later starts preserve existing records and passwords. You can set `SEED_DEMO`
 to `false` after the initial deployment if you do not want missing demo records
 to be restored. Seeding never clears tables.
+
+The configured shared visitor keeps the name `Demo Visitor`, remains unblocked
+and uses `DEMO_USER_PASSWORD`. Visitors can create bookings, use demo checkout
+and explore account pages, but cannot change the shared profile's name, email or
+password. Keep administrator credentials private; only the visitor credentials
+are intended to be published.
 
 The bootstrap password is checked when creating a new administrator. Once the
 account exists, startup preserves its password; editing `ADMIN_PASSWORD` does
@@ -140,6 +154,7 @@ monthly limits and provider policies.
 | Nested page gives 404 | Confirm the deployed process uses `NODE_ENV=production` and the current server code |
 | Email or Google sign-in is unavailable | Configure the provider settings described in [authentication setup](authentication.md) |
 | Changing `ADMIN_PASSWORD` does not change login | Bootstrap preserves existing passwords; update the password through account settings |
+| Shared visitor cannot sign in | Add both `DEMO_USER_EMAIL` and `DEMO_USER_PASSWORD`, then redeploy the service |
 
 Secrets belong in provider environment settings. Do not paste database URLs,
 passwords or API secrets into GitHub issues, screenshots or chat messages.

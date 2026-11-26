@@ -1,7 +1,7 @@
 const { randomBytes } = require("node:crypto");
 const { DateTime } = require("luxon");
 const sequelize = require("../config/connection");
-const { env, validateAdminEnv } = require("../config/env");
+const { env, validateAdminEnv, validateDemoUserEnv } = require("../config/env");
 const { User, EscapeRoom, Booking, Review } = require("../models");
 const { migrate } = require("../db/migrate");
 
@@ -15,6 +15,7 @@ const comments = ["Atmospheric puzzles and a brilliant final reveal. Our team lo
 
 async function seedDatabase({ demo = true } = {}) {
   validateAdminEnv();
+  validateDemoUserEnv();
   await sequelize.transaction(async (transaction) => {
     await sequelize.query("SELECT pg_advisory_xact_lock(784219634)", { transaction });
     if (env.adminEmail && env.adminPassword) {
@@ -23,6 +24,17 @@ async function seedDatabase({ demo = true } = {}) {
       if (!admin) {
         if (env.adminPassword.length < 8) throw new Error("ADMIN_PASSWORD must contain at least 8 characters when creating a new administrator.");
         await User.create({ email: env.adminEmail, firstName: "QuestScout", lastName: "Admin", password: env.adminPassword, isAdmin: true, hasPassword: true }, { transaction });
+      }
+    }
+    if (env.demoUserEmail && env.demoUserPassword) {
+      const account = await User.findOne({ where: { email: env.demoUserEmail }, transaction });
+      if (account?.isAdmin) throw new Error("DEMO_USER_EMAIL belongs to an administrator. Choose another email.");
+      if (!account) {
+        await User.create({ email: env.demoUserEmail, firstName: "Demo", lastName: "Visitor", password: env.demoUserPassword, isAdmin: false, isBlocked: false, hasPassword: true }, { transaction });
+      } else {
+        const update = { firstName: "Demo", lastName: "Visitor", isBlocked: false, hasPassword: true };
+        if (!account.hasPassword || !(await account.checkPassword(env.demoUserPassword))) update.password = env.demoUserPassword;
+        await account.update(update, { transaction });
       }
     }
     if (!demo) return;
@@ -39,9 +51,10 @@ if (require.main === module) {
   (async () => {
     try {
       validateAdminEnv();
+      validateDemoUserEnv();
       await migrate();
       await seedDatabase();
-      console.log("Demo data is ready. Existing records and passwords were preserved.");
+      console.log("Demo data and configured bootstrap accounts are ready.");
     } catch (error) {
       console.error(`Seeding failed: ${error.code || error.message}`);
       process.exitCode = 1;

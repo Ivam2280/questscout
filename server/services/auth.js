@@ -6,10 +6,15 @@ const { User } = require("../models");
 const { signToken } = require("../utils/auth");
 const sendEmail = require("../utils/sendEmail");
 const { requireUser } = require("./bookings");
-const { AuthenticationError, UserInputError } = require("../utils/errors");
+const { AuthenticationError, ForbiddenError, UserInputError } = require("../utils/errors");
 
 const normalizeEmail = (email) => email.trim().toLowerCase();
 const codeHash = (id, code) => createHmac("sha256", env.jwtSecret).update(`${id}:${code}`).digest("hex");
+const isDemoUser = (user) => Boolean(user && env.demoUserEmail && normalizeEmail(user.email) === normalizeEmail(env.demoUserEmail));
+
+function requireMutableProfile(user) {
+  if (isDemoUser(user)) throw new ForbiddenError("The shared demo profile cannot be changed.");
+}
 
 async function issueChallenge(email, subject) {
   if (!sendEmail.emailEnabled()) await sendEmail(email, subject, "");
@@ -65,11 +70,13 @@ const authMutations = {
     requireUser(context);
     if (!input.firstName.trim() || !input.lastName.trim() || input.firstName.length > 50 || input.lastName.length > 50) throw new UserInputError("Enter a first and last name of up to 50 characters.");
     const user = await User.findByPk(context.user.id);
+    requireMutableProfile(user);
     return user.update({ firstName: input.firstName.trim(), lastName: input.lastName.trim() });
   },
   updatePassword: async (_, { currentPassword, newPassword }, context) => {
     requireUser(context);
     const user = await User.findByPk(context.user.id);
+    requireMutableProfile(user);
     if (!user.hasPassword || !(await user.checkPassword(currentPassword))) throw new AuthenticationError("Incorrect current password.");
     if (await user.checkPassword(newPassword)) throw new UserInputError("Choose a different password.");
     return user.update({ password: newPassword });
@@ -77,29 +84,34 @@ const authMutations = {
   addPassword: async (_, { newPassword }, context) => {
     requireUser(context);
     const user = await User.findByPk(context.user.id);
+    requireMutableProfile(user);
     if (user.hasPassword) throw new UserInputError("Use the change-password form to update your password.");
     return user.update({ password: newPassword, hasPassword: true });
   },
   requestEmailUpdate: async (_, { newEmail }, context) => {
     requireUser(context);
+    const user = await User.findByPk(context.user.id);
+    requireMutableProfile(user);
     const email = normalizeEmail(newEmail);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new UserInputError("Enter a valid email address.");
     const existing = await User.findOne({ where: { email } });
     if (existing) throw new UserInputError("Email is already in use.");
     const id = await issueChallenge(email, "Verify your new QuestScout email");
-    const user = await User.findByPk(context.user.id);
     await user.update({ pendingEmail: email, verificationToken: id, tokenExpiration: new Date(Date.now() + 900000) });
     return true;
   },
   confirmEmailUpdate: async (_, { token }, context) => {
     requireUser(context);
     const user = await User.findByPk(context.user.id);
+    requireMutableProfile(user);
     await verifyChallenge(user.verificationToken, user.pendingEmail, token, true);
     return user.update({ email: user.pendingEmail, pendingEmail: null, verificationToken: null, tokenExpiration: null });
   },
   forgotPassword: async (_, { email }) => {
-    if (!sendEmail.emailEnabled()) await sendEmail(email, "", "");
-    const user = await User.findOne({ where: { email: normalizeEmail(email) } });
+    const normalizedEmail = normalizeEmail(email);
+    const user = await User.findOne({ where: { email: normalizedEmail } });
+    if (isDemoUser(user)) throw new ForbiddenError("The shared demo password cannot be reset.");
+    if (!sendEmail.emailEnabled()) await sendEmail(normalizedEmail, "", "");
     if (user) {
       const id = await issueChallenge(user.email, "Reset your QuestScout password");
       await user.update({ resetPasswordToken: id, resetPasswordExpiration: new Date(Date.now() + 900000) });
@@ -114,10 +126,11 @@ const authMutations = {
   resetPassword: async (_, { email, code, newPassword }) => {
     const user = await User.findOne({ where: { email: normalizeEmail(email) } });
     if (!user) throw new UserInputError("Invalid or expired verification code.");
+    requireMutableProfile(user);
     await verifyChallenge(user.resetPasswordToken, user.email, code, true);
     await user.update({ password: newPassword, hasPassword: true, resetPasswordToken: null, resetPasswordExpiration: null });
     return true;
   },
 };
 
-module.exports = { authMutations, normalizeEmail, verifyChallenge };
+module.exports = { authMutations, normalizeEmail, verifyChallenge, isDemoUser };

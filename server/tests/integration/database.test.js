@@ -16,6 +16,8 @@ process.env.MAIL_PROVIDER = "auto";
 for (const name of ["FIREBASE_API_KEY", "FIREBASE_AUTH_DOMAIN", "FIREBASE_PROJECT_ID", "FIREBASE_STORAGE_BUCKET", "FIREBASE_MESSAGING_SENDER_ID", "FIREBASE_APP_ID"]) process.env[name] = "";
 process.env.ADMIN_EMAIL = "";
 process.env.ADMIN_PASSWORD = "";
+process.env.DEMO_USER_EMAIL = "";
+process.env.DEMO_USER_PASSWORD = "";
 const sequelize = require("../../config/connection");
 const { postgresOptions } = require("../../config/postgres");
 const { migrate } = require("../../db/migrate");
@@ -84,6 +86,47 @@ test("an existing administrator can start and sign in without resetting the pass
     env.adminPassword = "another-bootstrap-password";
     await seedDatabase({ demo: false });
     assert.equal((await admin.reload()).password, hash);
+  } finally {
+    Object.assign(env, previous);
+    await User.destroy({ where: { email } });
+  }
+});
+test("a configured shared visitor is restored and cannot change its profile credentials", async () => {
+  const previous = { demoUserEmail: env.demoUserEmail, demoUserPassword: env.demoUserPassword };
+  const email = "shared-demo@example.test";
+  try {
+    Object.assign(env, { demoUserEmail: email, demoUserPassword: "short12" });
+    await assert.rejects(seedDatabase({ demo: false }), /at least 8 characters/);
+    assert.equal(await User.count({ where: { email } }), 0);
+
+    env.demoUserPassword = "shared-demo-password";
+    await seedDatabase({ demo: false });
+    const account = await User.findOne({ where: { email } });
+    const demoContext = { user: { id: account.id, isAdmin: false } };
+    assert.equal(account.firstName, "Demo");
+    assert.equal(account.lastName, "Visitor");
+    assert.equal(account.isAdmin, false);
+    assert.equal(account.isBlocked, false);
+    assert.equal(await account.checkPassword(env.demoUserPassword), true);
+    assert.ok((await authMutations.login(null, { email, password: env.demoUserPassword })).token);
+
+    await assert.rejects(authMutations.updateName(null, { input: { firstName: "Changed", lastName: "Name" } }, demoContext), /shared demo profile/);
+    await assert.rejects(authMutations.updatePassword(null, { currentPassword: env.demoUserPassword, newPassword: "different-password" }, demoContext), /shared demo profile/);
+    await assert.rejects(authMutations.requestEmailUpdate(null, { newEmail: "changed-demo@example.test" }, demoContext), /shared demo profile/);
+    await assert.rejects(authMutations.forgotPassword(null, { email }), /shared demo password/);
+
+    const { Mutation } = require("../../schemas/resolvers");
+    const adminContext = { user: { id: user.id, isAdmin: true } };
+    await assert.rejects(Mutation.deleteUser(null, { id: account.id }, adminContext), /shared demo account/);
+    await assert.rejects(Mutation.toggleBlockUser(null, { id: account.id }, adminContext), /shared demo account/);
+
+    await account.update({ firstName: "Changed", lastName: "Name", password: "tampered-password", isBlocked: true });
+    await seedDatabase({ demo: false });
+    await account.reload();
+    assert.equal(account.firstName, "Demo");
+    assert.equal(account.lastName, "Visitor");
+    assert.equal(account.isBlocked, false);
+    assert.equal(await account.checkPassword(env.demoUserPassword), true);
   } finally {
     Object.assign(env, previous);
     await User.destroy({ where: { email } });
