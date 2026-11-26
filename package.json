@@ -1,0 +1,43 @@
+{
+  "name": "questscout",
+  "version": "1.0.0",
+  "private": true,
+  "description": "An escape room booking application with a React interface, GraphQL API and Neon PostgreSQL database.",
+  "author": "Ivan Tovstukha",
+  "license": "ISC",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "engines": {
+    "node": ">=24 <27"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n api,client \"npm run dev -w server\" \"npm run dev -w client\"",
+    "develop": "npm run dev",
+    "start": "npm start -w server",
+    "build": "npm run build -w client",
+    "db:migrate": "npm run db:migrate -w server",
+    "db:seed": "npm run db:seed -w server",
+    "seed": "npm run db:seed",
+    "db:setup": "npm run db:migrate && npm run db:seed",
+    "mail:check": "node scripts/check-mail.js",
+    "test": "node --test server/tests/*.test.js",
+    "test:db": "node --test --test-concurrency=1 server/tests/integration/*.test.js",
+    "test:e2e": "playwright test",
+    "check": "npm test && npm run build"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "concurrently": "^9.2.1"
+  },
+  "overrides": {
+    "@firebase/firestore": {
+      "@grpc/grpc-js": "^1.14.7"
+    },
+    "@graphql-tools/utils": "^12.0.2",
+    "sequelize": {
+      "uuid": "^11.1.1"
+    }
+  }
+}
