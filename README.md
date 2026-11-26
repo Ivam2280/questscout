@@ -15,6 +15,21 @@ The project combines a responsive React interface with a GraphQL API and a
 PostgreSQL database hosted on Neon. Optional integrations add Google sign-in,
 email verification and PayPal Sandbox payments.
 
+## Live demo
+
+**Application:** [https://questscout.onrender.com](https://questscout.onrender.com)
+
+Use the protected shared visitor account to explore bookings, account pages and
+the built-in demonstration checkout:
+
+| Email | Password |
+| --- | --- |
+| `client@questscout.example` | `client123` |
+
+The shared profile's name, email and password cannot be changed. Payments are
+simulated and do not contact PayPal or charge real money. The free Render
+instance may need a short moment to wake after a period of inactivity.
+
 ## Features
 
 - Responsive quest catalogue with search, filtering and sorting
@@ -98,17 +113,22 @@ email verification and PayPal Sandbox payments.
 
 ![QuestScout user administration](docs/screenshots/12-admin-users.webp)
 
-### Mobile home
+### Mobile
 
-<p align="center">
-  <img src="docs/screenshots/13-home-mobile.webp" width="430" alt="QuestScout authenticated mobile home page">
-</p>
-
-### Mobile quest catalogue
-
-<p align="center">
-  <img src="docs/screenshots/14-quest-catalogue-mobile.webp" width="430" alt="QuestScout mobile quest catalogue">
-</p>
+<table>
+  <tr>
+    <th>Home</th>
+    <th>Quest catalogue</th>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/screenshots/13-home-mobile.webp" width="390" alt="QuestScout authenticated mobile home page">
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/screenshots/14-quest-catalogue-mobile.webp" width="390" alt="QuestScout mobile quest catalogue">
+    </td>
+  </tr>
+</table>
 
 ## Project structure
 
@@ -203,6 +223,17 @@ ADMIN_PASSWORD=replace-with-at-least-8-characters
 Both administrator fields must be set together. They are used only to create
 the initial administrator; existing passwords are never reset during startup.
 
+For a public portfolio deployment, an optional protected visitor can be
+created with:
+
+```dotenv
+DEMO_USER_EMAIL=client@questscout.example
+DEMO_USER_PASSWORD=client123
+```
+
+The visitor can use normal booking and demo-checkout flows, but cannot change
+the shared profile credentials.
+
 ### 4. Prepare the database
 
 ```bash
@@ -241,6 +272,8 @@ credentials.
 | `DEMO_PAYMENTS` | No | Enables checkout without external PayPal credentials |
 | `ADMIN_EMAIL` | No | Email for the initial administrator |
 | `ADMIN_PASSWORD` | No | Initial administrator password; minimum 8 characters |
+| `DEMO_USER_EMAIL` | No | Email for the protected shared visitor account |
+| `DEMO_USER_PASSWORD` | No | Shared visitor password; minimum 8 characters |
 | `FIREBASE_*` | No | Firebase web configuration for Google sign-in |
 | `MAIL_PROVIDER` | No | `auto`, `smtp`, `emailjs` or `resend` |
 | `SMTP_*` | No | SMTP host and credentials for local email delivery |
@@ -343,7 +376,8 @@ Render web service. Neon remains the PostgreSQL provider.
 
 1. Push the repository to GitHub.
 2. In Render, create a new **Blueprint** from the repository.
-3. Supply `DATABASE_URL`, `ADMIN_EMAIL` and `ADMIN_PASSWORD` when requested.
+3. Supply `DATABASE_URL`, administrator credentials and optional shared visitor
+   credentials when requested.
 4. Add your optional Firebase, mail and PayPal variables in Render.
 5. Deploy and verify the `/health` endpoint.
 
