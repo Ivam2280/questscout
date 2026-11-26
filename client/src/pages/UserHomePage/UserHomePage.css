@@ -92,7 +92,7 @@
   z-index: 3;
   width: min(100%, 1440px);
   margin: 0 auto;
-  padding: 78px clamp(24px, 6vw, 88px) 96px;
+  padding: 78px clamp(24px, 6vw, 88px) 56px;
   padding-left: clamp(20px, 2vw, 32px);
 }
 
@@ -210,12 +210,12 @@
 
 .home-section {
   position: relative;
-  padding: 56px clamp(24px, 6vw, 80px);
+  padding: 48px clamp(24px, 6vw, 80px);
   border-bottom: 1px solid var(--fog);
 }
 
 .home-section-inner { width: min(100%, 1200px); margin: 0 auto; }
-.home-section-header { margin-bottom: 32px; }
+.home-section-header { margin-bottom: 28px; }
 
 .home-section-eyebrow {
   display: flex;
@@ -472,8 +472,8 @@
 @keyframes home-loader-spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 1000px) {
-  .home-section { padding-block: 28px; }
-  .home-section-header { margin-bottom: 24px; }
+  .home-section { padding-block: 22px; }
+  .home-section-header { margin-bottom: 20px; }
   .home-room-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .home-room-link:last-child { grid-column: span 2; }
   .home-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -486,16 +486,16 @@
   .qs-hero-art { inset: 0; width: 100%; height: 58%; mask-image: linear-gradient(to bottom, #000 0%, #000 48%, transparent 100%); }
   .qs-hero-art img { object-position: 62% center; }
   .qs-hero-art::after { background: linear-gradient(to bottom, rgba(10,10,11,0.12), rgba(10,10,11,0.12) 42%, var(--ink)); }
-  .qs-hero-inner { padding-top: 310px; padding-bottom: 76px; }
+  .qs-hero-inner { padding-top: 310px; padding-bottom: 36px; }
   .qs-hero-copy { width: min(100%, 640px); }
   .qs-hero-title { font-size: clamp(4rem, 15vw, 6.7rem); }
 }
 
 @media (max-width: 680px) {
-  .home-section { padding-block: 18px; }
-  .home-section-header { margin-bottom: 18px; }
-  .home-section-eyebrow { margin-bottom: 12px; }
-  .home-section-heading-row { align-items: flex-start; flex-direction: column; gap: 12px; }
+  .home-section { padding-block: 12px; }
+  .home-section-header { margin-bottom: 14px; }
+  .home-section-eyebrow { margin-bottom: 10px; }
+  .home-section-heading-row { align-items: flex-start; flex-direction: column; gap: 10px; }
   .home-room-grid,
   .home-steps,
   .home-contact-grid { grid-template-columns: 1fr; }
@@ -508,7 +508,7 @@
 
 @media (max-width: 560px) {
   .qs-hero { min-height: 720px; }
-  .qs-hero-inner { padding: 265px 22px 64px; }
+  .qs-hero-inner { padding: 265px 22px 20px; }
   .qs-hero-kicker { gap: 10px; margin-bottom: 18px !important; font-size: 13px; letter-spacing: 0.13em; }
   .qs-hero-kicker::before { width: 28px; }
   .qs-hero-title { font-size: clamp(3.7rem, 18vw, 5rem); }
