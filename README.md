@@ -73,6 +73,11 @@ instance may need a short moment to wake after a period of inactivity.
 
 ![QuestScout quest details and booking page](docs/screenshots/03-quest-details.webp)
 
+<details>
+<summary><strong>View more screenshots (12)</strong></summary>
+
+<br>
+
 ### Date and time selection
 
 ![QuestScout date and time selection](docs/screenshots/04-date-and-time.webp)
@@ -129,6 +134,8 @@ instance may need a short moment to wake after a period of inactivity.
     </td>
   </tr>
 </table>
+
+</details>
 
 ## Project structure
 
