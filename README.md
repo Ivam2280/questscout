@@ -181,7 +181,7 @@ using password authentication and demo checkout.
 git clone <repository-url>
 cd questscout
 nvm use
-npm ci
+npm install
 ```
 
 The repository uses npm workspaces, so the root command installs both the
