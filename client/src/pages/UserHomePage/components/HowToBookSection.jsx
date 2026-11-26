@@ -15,7 +15,6 @@ export default function HowToBookSection() {
     <section className="home-section">
       <div className="home-section-inner">
         <HomeSectionHeader
-          eyebrow="Deployment Protocol"
           title="How to"
           accent="Book"
           linkTo="/howtobook"

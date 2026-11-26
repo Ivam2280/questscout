@@ -7,7 +7,7 @@ export default function LocationSection() {
     <section className="home-section home-location-section">
       <div className="home-location-glow" aria-hidden="true" />
       <div className="home-section-inner home-location-inner">
-        <HomeSectionHeader eyebrow="Our Coordinates" title="Locate" accent="Base" />
+        <HomeSectionHeader title="Locate" accent="Base" />
 
         <motion.div
           className="home-location-grid"

@@ -52,7 +52,6 @@ export default function PopularRoomsSection({ rooms }) {
     <section id="rooms" className="home-section">
       <div className="home-section-inner">
         <HomeSectionHeader
-          eyebrow="Active Protocols"
           title="Trending"
           accent="Missions"
           linkTo="/escaperooms"

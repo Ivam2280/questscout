@@ -217,23 +217,6 @@
 .home-section-inner { width: min(100%, 1200px); margin: 0 auto; }
 .home-section-header { margin-bottom: 28px; }
 
-.home-section-eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.home-section-eyebrow > span { width: 48px; height: 2px; flex: 0 0 48px; background: var(--red); }
-
-.home-section-eyebrow p {
-  color: var(--red);
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
 .home-section-heading-row {
   display: flex;
   align-items: flex-end;
@@ -492,9 +475,8 @@
 }
 
 @media (max-width: 680px) {
-  .home-section { padding-block: 12px; }
+  .home-section { padding-block: 20px; }
   .home-section-header { margin-bottom: 14px; }
-  .home-section-eyebrow { margin-bottom: 10px; }
   .home-section-heading-row { align-items: flex-start; flex-direction: column; gap: 10px; }
   .home-room-grid,
   .home-steps,
@@ -508,7 +490,7 @@
 
 @media (max-width: 560px) {
   .qs-hero { min-height: 720px; }
-  .qs-hero-inner { padding: 265px 22px 20px; }
+  .qs-hero-inner { padding: 265px 22px 26px; }
   .qs-hero-kicker { gap: 10px; margin-bottom: 18px !important; font-size: 13px; letter-spacing: 0.13em; }
   .qs-hero-kicker::before { width: 28px; }
   .qs-hero-title { font-size: clamp(3.7rem, 18vw, 5rem); }
